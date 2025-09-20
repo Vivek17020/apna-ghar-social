@@ -2,7 +2,9 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import FloatingActionButton from "@/components/FloatingActionButton";
 import heroImage from "@/assets/hero-image.jpg";
+import { useToast } from "@/hooks/use-toast";
 
 const samplePosts = [
   {
@@ -54,6 +56,22 @@ const samplePosts = [
 ];
 
 const Index = () => {
+  const { toast } = useToast();
+
+  const handleFabClick = () => {
+    // Scroll to create post section
+    const createPostElement = document.querySelector('[data-create-post]');
+    if (createPostElement) {
+      createPostElement.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    toast({
+      title: "✨ Ready to share?",
+      description: "What's on your mind today?",
+      duration: 2000,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-warm">
       <Header />
@@ -62,29 +80,37 @@ const Index = () => {
         {/* Main Content */}
         <div className="flex-1 max-w-2xl space-y-6">
           {/* Welcome Hero Section */}
-          <div className="bg-gradient-sunset rounded-xl p-8 text-center shadow-primary">
+          <div className="bg-gradient-sunset rounded-xl p-8 text-center shadow-primary hover-lift animate-fade-in">
             <div className="max-w-md mx-auto">
               <img 
                 src={heroImage} 
                 alt="Samvaad Community" 
-                className="w-full h-48 object-cover rounded-lg mb-6 shadow-soft"
+                className="w-full h-48 object-cover rounded-lg mb-6 shadow-soft hover:scale-105 transition-transform duration-500"
               />
-              <h1 className="text-3xl font-bold text-white mb-3">
+              <h1 className="text-3xl font-bold text-white mb-3 animate-fade-in-up">
                 Welcome to Samvaad
               </h1>
-              <p className="text-white/90 text-lg">
+              <p className="text-white/90 text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 Connect with India's vibrant community. Share your stories, discover new perspectives.
               </p>
             </div>
           </div>
 
           {/* Create Post */}
-          <CreatePost />
+          <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }} data-create-post>
+            <CreatePost />
+          </div>
 
           {/* Posts Feed */}
           <div className="space-y-4">
             {samplePosts.map((post, index) => (
-              <PostCard key={index} {...post} />
+              <div 
+                key={index}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${(index + 1) * 0.2}s` }}
+              >
+                <PostCard {...post} />
+              </div>
             ))}
           </div>
         </div>
@@ -92,6 +118,9 @@ const Index = () => {
         {/* Sidebar */}
         <Sidebar />
       </main>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton onClick={handleFabClick} />
     </div>
   );
 };
