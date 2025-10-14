@@ -419,50 +419,84 @@ export type Database = {
           },
         ]
       }
+      exam_list: {
+        Row: {
+          category: string
+          created_at: string
+          exam_name: string
+          id: string
+          logo_url: string | null
+          short_description: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          exam_name: string
+          id?: string
+          logo_url?: string | null
+          short_description?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          exam_name?: string
+          id?: string
+          logo_url?: string | null
+          short_description?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       exam_papers: {
         Row: {
-          category: string | null
           created_at: string
           download_count: number | null
-          exam_name: string
+          exam_id: string | null
           file_size: number | null
           file_url: string
           id: string
-          subject: string | null
-          title: string
+          tier: string | null
           updated_at: string
           uploaded_by: string | null
           year: number
         }
         Insert: {
-          category?: string | null
           created_at?: string
           download_count?: number | null
-          exam_name: string
+          exam_id?: string | null
           file_size?: number | null
           file_url: string
           id?: string
-          subject?: string | null
-          title: string
+          tier?: string | null
           updated_at?: string
           uploaded_by?: string | null
           year: number
         }
         Update: {
-          category?: string | null
           created_at?: string
           download_count?: number | null
-          exam_name?: string
+          exam_id?: string | null
           file_size?: number | null
           file_url?: string
           id?: string
-          subject?: string | null
-          title?: string
+          tier?: string | null
           updated_at?: string
           uploaded_by?: string | null
           year?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "exam_papers_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exam_list"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exam_papers_uploaded_by_fkey"
             columns: ["uploaded_by"]
