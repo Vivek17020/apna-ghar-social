@@ -1,126 +1,119 @@
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import CreatePost from "@/components/CreatePost";
-import PostCard from "@/components/PostCard";
-import FloatingActionButton from "@/components/FloatingActionButton";
-import heroImage from "@/assets/hero-image.jpg";
-import { useToast } from "@/hooks/use-toast";
-
-const samplePosts = [
-  {
-    author: {
-      name: "Priya Sharma",
-      username: "priyatech",
-      avatar: "",
-    },
-    content: "Just launched my new startup focused on digital payments for rural India! 🚀 Excited to bridge the digital divide and empower millions. #IndiaDigital #StartupLife",
-    timestamp: "2h",
-    likes: 124,
-    comments: 18,
-    isLiked: true,
-  },
-  {
-    author: {
-      name: "Rajesh Kumar",
-      username: "rajeshk",
-      avatar: "",
-    },
-    content: "The future of Indian technology is here! AI and machine learning are transforming how we work and live. What's your favorite AI tool? 🤖 #TechIndia #Innovation",
-    timestamp: "4h",
-    likes: 89,
-    comments: 12,
-  },
-  {
-    author: {
-      name: "Anita Singh",
-      username: "anitasingh",
-      avatar: "",
-    },
-    content: "Celebrating the diversity of our beautiful country! 🇮🇳 From Kerala's backwaters to Rajasthan's deserts, every corner has a story to tell. Share your favorite Indian destination below! ⬇️",
-    image: heroImage,
-    timestamp: "6h",
-    likes: 256,
-    comments: 34,
-  },
-  {
-    author: {
-      name: "Dev Patel",
-      username: "devpatel",
-      avatar: "",
-    },
-    content: "Working late nights on an exciting new project. The Indian developer community is absolutely incredible - so much talent and passion! 💻 #CodeLife #IndianDevelopers",
-    timestamp: "8h",
-    likes: 67,
-    comments: 9,
-  },
-];
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { FileText, Calendar, Eye, ArrowRight, Shield } from 'lucide-react';
 
 const Index = () => {
-  const { toast } = useToast();
-
-  const handleFabClick = () => {
-    // Scroll to create post section
-    const createPostElement = document.querySelector('[data-create-post]');
-    if (createPostElement) {
-      createPostElement.scrollIntoView({ behavior: 'smooth' });
-    }
-    
-    toast({
-      title: "✨ Ready to share?",
-      description: "What's on your mind today?",
-      duration: 2000,
-    });
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-warm">
-      <Header />
-      
-      <main className="container mx-auto flex gap-6 pt-6 pb-12">
-        {/* Main Content */}
-        <div className="flex-1 max-w-2xl space-y-6">
-          {/* Welcome Hero Section */}
-          <div className="bg-gradient-sunset rounded-xl p-8 text-center shadow-primary hover-lift animate-fade-in">
-            <div className="max-w-md mx-auto">
-              <img 
-                src={heroImage} 
-                alt="Samvaad Community" 
-                className="w-full h-48 object-cover rounded-lg mb-6 shadow-soft hover:scale-105 transition-transform duration-500"
-              />
-              <h1 className="text-3xl font-bold text-white mb-3 animate-fade-in-up">
-                Welcome to Samvaad
-              </h1>
-              <p className="text-white/90 text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                Connect with India's vibrant community. Share your stories, discover new perspectives.
-              </p>
-            </div>
-          </div>
-
-          {/* Create Post */}
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }} data-create-post>
-            <CreatePost />
-          </div>
-
-          {/* Posts Feed */}
-          <div className="space-y-4">
-            {samplePosts.map((post, index) => (
-              <div 
-                key={index}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${(index + 1) * 0.2}s` }}
-              >
-                <PostCard {...post} />
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <FileText className="h-4 w-4 text-primary-foreground" />
               </div>
-            ))}
+              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Article Hub
+              </h1>
+            </div>
+            <Button asChild variant="outline" className="border-primary/20 hover:bg-primary/10">
+              <Link to="/admin/login">
+                <Shield className="w-4 h-4 mr-2" />
+                Admin Login
+              </Link>
+            </Button>
           </div>
         </div>
+      </header>
 
-        {/* Sidebar */}
-        <Sidebar />
-      </main>
+      {/* Hero Section */}
+      <section className="relative py-24 px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-gradient-hero opacity-10" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-6">
+            Professional Content Management
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            A powerful admin dashboard for creating, editing, and publishing articles with rich text editing and media management.
+          </p>
+          <Button asChild size="lg" className="bg-gradient-primary hover:bg-gradient-secondary transition-all duration-300 shadow-glow">
+            <Link to="/admin/login">
+              Get Started
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
+        </div>
+      </section>
 
-      {/* Floating Action Button */}
-      <FloatingActionButton onClick={handleFabClick} />
+      {/* Features */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-card/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Everything you need to manage content
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Built with modern technologies for a seamless experience
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="border-border/50 hover:shadow-accent transition-all duration-300">
+              <CardHeader>
+                <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
+                  <FileText className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <CardTitle>Rich Text Editor</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Professional WYSIWYG editor with support for headings, formatting, links, images, and code blocks.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-accent transition-all duration-300">
+              <CardHeader>
+                <div className="w-12 h-12 bg-gradient-secondary rounded-lg flex items-center justify-center mb-4">
+                  <Eye className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <CardTitle>Live Publishing</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Publish articles instantly without redeploy. Changes go live immediately with real-time updates.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-accent transition-all duration-300">
+              <CardHeader>
+                <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <CardTitle>Admin Security</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Secure admin-only access with Supabase authentication and role-based permissions.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-card/50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-muted-foreground">
+            Built with React, TypeScript, Tailwind CSS, and Supabase
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
