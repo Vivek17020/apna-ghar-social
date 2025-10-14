@@ -32,6 +32,7 @@ import AdminNewArticle from "./pages/AdminNewArticle";
 import AdminEditArticle from "./pages/AdminEditArticle";
 import AdminEngagement from "./pages/AdminEngagement";
 import AdminSettings from "./pages/AdminSettings";
+import AdminExams from "./pages/AdminExams";
 import NewsletterPreferencesPage from "./pages/NewsletterPreferences";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -100,6 +101,7 @@ const App = () => {
                       <Route path="engagement" element={<AdminEngagement />} />
                       <Route path="audit-report" element={<AuditReport />} />
                       <Route path="settings" element={<AdminSettings />} />
+                      <Route path="exams" element={<AdminExams />} />
                       <Route path="exam-papers" element={<AdminExamPapers />} />
                       <Route path="upload-pyqs" element={<AdminExamPapers />} />
                     </Route>

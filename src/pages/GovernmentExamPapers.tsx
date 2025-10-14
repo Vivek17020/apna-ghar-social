@@ -12,21 +12,37 @@ import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 
 export default function GovernmentExamPapers() {
   const { slug } = useParams();
-  const examName = slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || '';
 
-  const { data: papers, isLoading } = useQuery({
-    queryKey: ["exam-papers", slug],
+  const { data: exam, isLoading: examLoading } = useQuery({
+    queryKey: ["exam", slug],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("exam_papers")
+        .from("exam_list")
         .select("*")
-        .ilike("exam_name", examName)
-        .order("year", { ascending: false })
-        .order("created_at", { ascending: false });
+        .eq("slug", slug)
+        .single();
       
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: papers, isLoading: papersLoading } = useQuery({
+    queryKey: ["exam-papers", exam?.id],
+    queryFn: async () => {
+      if (!exam?.id) return [];
+      
+      const { data, error } = await supabase
+        .from("exam_papers")
+        .select("*")
+        .eq("exam_id", exam.id)
+        .order("year", { ascending: false })
+        .order("created_at", { ascending: false});
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!exam?.id,
   });
 
   const groupedPapers = papers?.reduce((acc, paper) => {
@@ -38,16 +54,27 @@ export default function GovernmentExamPapers() {
   }, {} as Record<number, typeof papers>);
 
   const years = Object.keys(groupedPapers || {}).map(Number).sort((a, b) => b - a);
-  const minYear = Math.min(...years);
-  const maxYear = Math.max(...years);
+  const minYear = years.length > 0 ? Math.min(...years) : new Date().getFullYear();
+  const maxYear = years.length > 0 ? Math.max(...years) : new Date().getFullYear();
 
   const breadcrumbs = [
     { name: "Home", url: window.location.origin },
     { name: "Government Exams", url: `${window.location.origin}/government-exams` },
-    { name: examName, url: window.location.href }
+    { name: exam?.exam_name || "", url: window.location.href }
   ];
 
-  if (!papers || papers.length === 0) {
+  if (examLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </>
+    );
+  }
+
+  if (!exam || !papers || papers.length === 0) {
     return (
       <>
         <Navbar />
@@ -67,14 +94,14 @@ export default function GovernmentExamPapers() {
   return (
     <>
       <Helmet>
-        <title>{`${examName} Previous Year Question Papers PDF (${minYear}–${maxYear}) - Download Free`}</title>
+        <title>{`${exam.exam_name} Previous Year Question Papers PDF (${minYear}–${maxYear}) - Download Free`}</title>
         <meta 
           name="description" 
-          content={`Download ${examName} previous year question papers PDF from ${minYear} to ${maxYear}. Free download for competitive exam preparation.`} 
+          content={`Download ${exam.exam_name} previous year question papers PDF from ${minYear} to ${maxYear}. Free download for competitive exam preparation.`} 
         />
         <meta 
           name="keywords" 
-          content={`${examName}, ${examName} previous year papers, ${examName} PDF download, ${examName} question papers`} 
+          content={`${exam.exam_name}, ${exam.exam_name} previous year papers, ${exam.exam_name} PDF download, ${exam.exam_name} question papers`} 
         />
         <link rel="canonical" href={window.location.href} />
         
@@ -82,11 +109,11 @@ export default function GovernmentExamPapers() {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "EducationalOccupationalCredential",
-            "name": `${examName} Previous Year Question Papers`,
+            "name": `${exam.exam_name} Previous Year Question Papers`,
             "educationalLevel": "Competitive Exam",
             "about": {
               "@type": "Thing",
-              "name": examName
+              "name": exam.exam_name
             }
           })}
         </script>
@@ -108,12 +135,12 @@ export default function GovernmentExamPapers() {
                 Government Exams
               </Link>
               <ChevronRight className="h-4 w-4" />
-              <span className="text-foreground font-medium">{examName}</span>
+              <span className="text-foreground font-medium">{exam.exam_name}</span>
             </nav>
 
             <header className="mb-8">
               <h1 className="text-3xl md:text-4xl font-bold mb-3 text-foreground">
-                {examName} Previous Year Question Papers PDF ({minYear}–{maxYear})
+                {exam.exam_name} Previous Year Question Papers PDF ({minYear}–{maxYear})
               </h1>
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mt-4">
                 <p className="text-sm">
@@ -123,7 +150,7 @@ export default function GovernmentExamPapers() {
               </div>
             </header>
 
-            {isLoading ? (
+            {papersLoading ? (
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="h-16 bg-muted animate-pulse rounded" />
@@ -154,8 +181,7 @@ export default function GovernmentExamPapers() {
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Subject</TableHead>
+                                <TableHead>Tier/Level</TableHead>
                                 <TableHead className="text-center">Downloads</TableHead>
                                 <TableHead className="text-center">Action</TableHead>
                               </TableRow>
@@ -163,8 +189,7 @@ export default function GovernmentExamPapers() {
                             <TableBody>
                               {yearPapers.map((paper) => (
                                 <TableRow key={paper.id}>
-                                  <TableCell className="font-medium">{paper.title}</TableCell>
-                                  <TableCell>{paper.subject || "—"}</TableCell>
+                                  <TableCell className="font-medium">{paper.tier || "General"}</TableCell>
                                   <TableCell className="text-center">{paper.download_count || 0}</TableCell>
                                   <TableCell className="text-center">
                                     <Button
