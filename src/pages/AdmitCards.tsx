@@ -31,19 +31,6 @@ export default function AdmitCards() {
     },
   });
 
-  const { data: contentSections } = useQuery({
-    queryKey: ["admit-card-content-sections"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("admit_card_content_sections")
-        .select("*")
-        .eq("is_active", true)
-        .order("display_order");
-      
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const filteredAdmitCards = useMemo(() => {
     if (!admitCards) return [];
@@ -185,21 +172,132 @@ export default function AdmitCards() {
               </div>
             )}
 
-            {contentSections && contentSections.length > 0 && (
-              <div className="space-y-8 mt-12">
-                {contentSections.map((section) => (
-                  <section key={section.id} className="bg-card rounded-lg p-8 shadow-sm border">
-                    <h2 className="text-3xl font-bold mb-6 text-foreground">
-                      {section.title}
-                    </h2>
-                    <div 
-                      className="prose prose-lg max-w-none dark:prose-invert [&>*]:mb-4 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3"
-                      dangerouslySetInnerHTML={{ __html: section.content }}
-                    />
-                  </section>
-                ))}
+            {/* Permanent Article Content */}
+            <article className="prose prose-lg dark:prose-invert max-w-none mt-12 [&>*]:mb-4 [&_p]:leading-relaxed">
+              <div className="bg-card border rounded-lg p-8 mb-8">
+                <h2 className="text-3xl font-bold mb-4">About Government Exam Admit Cards 2025</h2>
+                <p className="text-base leading-relaxed">
+                  An admit card, also known as a hall ticket or call letter, is an essential document that candidates must carry 
+                  to the examination center. It serves as proof of registration and contains crucial information about the exam 
+                  venue, timing, and candidate details. Without a valid admit card, candidates are not allowed to appear for the examination.
+                </p>
+                <p className="text-base leading-relaxed mt-4">
+                  Government exam admit cards are issued by various recruiting bodies such as SSC, UPSC, IBPS, RRB, and state public 
+                  service commissions. These admit cards typically become available 10-15 days before the examination date and can be 
+                  downloaded from the official websites of respective organizations.
+                </p>
               </div>
-            )}
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-card border rounded-lg p-6">
+                  <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    Information on Admit Card
+                  </h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• Candidate Name and Photo</li>
+                    <li>• Roll Number and Registration Number</li>
+                    <li>• Exam Name, Date, and Time</li>
+                    <li>• Exam Center Address and Code</li>
+                    <li>• Important Instructions</li>
+                    <li>• Candidate's Signature</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card border rounded-lg p-6">
+                  <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    Documents Required
+                  </h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• Original Admit Card (printed copy)</li>
+                    <li>• Valid Photo ID (Aadhaar/PAN/Driving License)</li>
+                    <li>• Recent Passport Size Photograph</li>
+                    <li>• Additional documents as per exam notification</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-primary/10 border-l-4 border-primary rounded-r-lg p-8 mb-8">
+                <h3 className="text-2xl font-bold mb-4">How to Download Admit Card?</h3>
+                <div className="space-y-4">
+                  <p className="text-base leading-relaxed">
+                    <strong>Step 1:</strong> Visit the official website of the exam conducting body (SSC, UPSC, IBPS, RRB, etc.)
+                  </p>
+                  <p className="text-base leading-relaxed">
+                    <strong>Step 2:</strong> Look for the "Admit Card" or "Hall Ticket" link on the homepage
+                  </p>
+                  <p className="text-base leading-relaxed">
+                    <strong>Step 3:</strong> Enter your registration number, date of birth, or other required credentials
+                  </p>
+                  <p className="text-base leading-relaxed">
+                    <strong>Step 4:</strong> Click on "Download" or "Submit" button to view your admit card
+                  </p>
+                  <p className="text-base leading-relaxed">
+                    <strong>Step 5:</strong> Verify all details carefully and take multiple printouts
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-card border rounded-lg p-8 mb-8">
+                <h3 className="text-2xl font-bold mb-4">Important Instructions</h3>
+                <div className="space-y-3 text-base">
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Carry the admit card along with a valid photo ID to the examination center</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Verify all details on the admit card immediately after downloading</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Report any discrepancies to the exam conducting authority immediately</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Reach the exam center at least 30 minutes before the reporting time</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Do not carry any prohibited items like mobile phones, calculators, or electronic devices</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>Keep multiple photocopies of the admit card as backup</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-card border rounded-lg p-8">
+                <h3 className="text-2xl font-bold mb-4">Major Government Exam Admit Cards</h3>
+                <p className="text-base leading-relaxed mb-4">
+                  We provide direct download links and notifications for admit cards of all major government examinations including:
+                </p>
+                <div className="grid md:grid-cols-2 gap-4 text-base">
+                  <div>
+                    <h4 className="font-semibold mb-2 text-primary">Central Government Exams:</h4>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• SSC CGL, CHSL, MTS, GD</li>
+                      <li>• UPSC Civil Services, NDA, CDS</li>
+                      <li>• Railway RRB NTPC, Group D</li>
+                      <li>• Banking IBPS PO, Clerk, RRB</li>
+                      <li>• Defence NDA, CDS, AFCAT</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2 text-primary">State Government Exams:</h4>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• State PSC Exams (All States)</li>
+                      <li>• State Police Recruitment</li>
+                      <li>• State Teacher Eligibility Tests</li>
+                      <li>• State Forest Department Exams</li>
+                      <li>• State Board Exams and Results</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
         </main>
 
