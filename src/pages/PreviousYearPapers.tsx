@@ -51,15 +51,20 @@ export default function PreviousYearPapers() {
           </nav>
 
           {/* SSC CGL 2025 Article Section */}
-          <article className="prose prose-lg dark:prose-invert max-w-none mb-12">
-            <h1 className="text-4xl font-bold mb-4">SSC CGL 2025: Complete Guide & Previous Year Papers</h1>
+          <article className="prose prose-lg dark:prose-invert max-w-none mb-12 [&>*]:mb-4 [&_p]:leading-relaxed">
+            <h1 className="text-4xl font-bold mb-6">SSC CGL 2025: Complete Guide & Previous Year Papers</h1>
             
-            <div className="bg-muted/50 rounded-lg p-6 mb-8">
-              <h2 className="text-2xl font-semibold mb-3">About SSC CGL 2025</h2>
-              <p className="text-muted-foreground">
+            <div className="bg-card border rounded-lg p-8 mb-8">
+              <h2 className="text-3xl font-bold mb-4">About SSC CGL 2025</h2>
+              <p className="text-base leading-relaxed">
                 The Staff Selection Commission Combined Graduate Level (SSC CGL) examination is one of the most prestigious 
                 competitive exams in India. It is conducted to recruit candidates for various Group B and Group C posts in 
                 different government ministries, departments, and organizations.
+              </p>
+              <p className="text-base leading-relaxed mt-4">
+                SSC CGL offers lucrative job opportunities in various government departments such as Income Tax, Central Excise, 
+                Customs, Ministry of External Affairs, and many more. The exam tests candidates on their general awareness, 
+                quantitative aptitude, English language, and reasoning abilities.
               </p>
             </div>
 
@@ -91,15 +96,55 @@ export default function PreviousYearPapers() {
               </div>
             </div>
 
-            <div className="bg-primary/10 border-l-4 border-primary rounded-r-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-3">Why Practice with Previous Year Papers?</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>✓ Understand the exam pattern and difficulty level</li>
-                <li>✓ Identify important topics and recurring questions</li>
-                <li>✓ Improve time management and speed</li>
-                <li>✓ Build confidence before the actual exam</li>
-                <li>✓ Get familiar with the question paper format</li>
+            <div className="bg-primary/10 border-l-4 border-primary rounded-r-lg p-8 mb-8">
+              <h3 className="text-2xl font-bold mb-4">Why Practice with Previous Year Papers?</h3>
+              <p className="text-base leading-relaxed mb-4">
+                Solving previous year question papers is an essential part of exam preparation. It helps you understand the 
+                actual exam environment and prepares you better for the competition.
+              </p>
+              <ul className="space-y-3 text-base">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>Understand the exam pattern and difficulty level of questions asked in previous years</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>Identify important topics and recurring questions that appear frequently</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>Improve time management and speed by practicing under exam conditions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>Build confidence before the actual exam and reduce exam anxiety</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>Get familiar with the question paper format and marking scheme</span>
+                </li>
               </ul>
+            </div>
+
+            <div className="bg-card border rounded-lg p-8 mb-8">
+              <h3 className="text-2xl font-bold mb-4">How to Use Previous Year Papers Effectively</h3>
+              <div className="space-y-4">
+                <p className="text-base leading-relaxed">
+                  <strong>1. Start with Analysis:</strong> Before solving, go through the paper to understand the topics covered and difficulty level.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>2. Time Yourself:</strong> Solve papers under timed conditions to simulate the actual exam environment.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>3. Review Mistakes:</strong> After solving, thoroughly review all incorrect answers and understand where you went wrong.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>4. Track Progress:</strong> Maintain a record of your scores to track improvement over time.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>5. Focus on Weak Areas:</strong> Identify topics where you consistently make mistakes and work on strengthening them.
+                </p>
+              </div>
             </div>
           </article>
 

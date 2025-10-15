@@ -188,12 +188,12 @@ export default function AdmitCards() {
             {contentSections && contentSections.length > 0 && (
               <div className="space-y-8 mt-12">
                 {contentSections.map((section) => (
-                  <section key={section.id} className="bg-card rounded-lg p-6 shadow-sm">
-                    <h2 className="text-2xl font-bold mb-4 text-primary">
+                  <section key={section.id} className="bg-card rounded-lg p-8 shadow-sm border">
+                    <h2 className="text-3xl font-bold mb-6 text-foreground">
                       {section.title}
                     </h2>
                     <div 
-                      className="prose prose-sm max-w-none dark:prose-invert"
+                      className="prose prose-lg max-w-none dark:prose-invert [&>*]:mb-4 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3"
                       dangerouslySetInnerHTML={{ __html: section.content }}
                     />
                   </section>
