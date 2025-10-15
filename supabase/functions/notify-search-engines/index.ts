@@ -203,10 +203,17 @@ serve(async (req) => {
       console.log('All pings completed:', results);
     };
 
-    // Start background task (non-blocking)
-    backgroundTask().catch(err => {
-      console.error('Background task error:', err);
-    });
+    // Use EdgeRuntime.waitUntil for proper background task handling
+    // @ts-ignore - EdgeRuntime is available in Supabase Edge Functions
+    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
+      // @ts-ignore
+      EdgeRuntime.waitUntil(backgroundTask());
+    } else {
+      // Fallback for local development
+      backgroundTask().catch(err => {
+        console.error('Background task error:', err);
+      });
+    }
 
     // Return immediate response
     return new Response(

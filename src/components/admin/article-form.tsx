@@ -411,24 +411,18 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
         });
       }
 
-      // Auto-ping search engines if publishing (not draft)
+      // Auto-ping search engines if publishing (not draft) - non-blocking
       if (!isDraft && savedArticleId) {
-        try {
-          const { error: pingError } = await supabase.functions.invoke('notify-search-engines', {
-            body: { articleId: savedArticleId }
-          });
-          
-          if (!pingError) {
-            toast({
-              title: "✅ Sitemap pinged successfully!",
-              description: "Google & Bing notified — indexing requested!",
-              duration: 5000,
-            });
+        // Fire-and-forget background notification
+        supabase.functions.invoke('notify-search-engines', {
+          body: { articleId: savedArticleId }
+        }).then(({ error }) => {
+          if (!error) {
+            console.log('Search engines notified successfully');
           }
-        } catch (err) {
-          console.error('Failed to notify search engines:', err);
-          // Don't show error toast - this is a background operation
-        }
+        }).catch(err => {
+          console.error('Search engine notification failed (non-critical):', err);
+        });
       }
 
       // Clear draft from localStorage after successful save

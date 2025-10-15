@@ -23,7 +23,17 @@ export function ArticleGrid({ categorySlug }: ArticleGridProps) {
       let query = supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          slug,
+          excerpt,
+          image_url,
+          published_at,
+          reading_time,
+          views_count,
+          likes_count,
+          author,
+          author_id,
           categories:category_id (
             id,
             name,
@@ -61,7 +71,8 @@ export function ArticleGrid({ categorySlug }: ArticleGridProps) {
         hasMore: (count || 0) > page * ARTICLES_PER_PAGE
       };
     },
-    staleTime: 1000 * 30, // Consider data stale after 30 seconds
+    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 
   // Listen for article publish events to auto-refresh

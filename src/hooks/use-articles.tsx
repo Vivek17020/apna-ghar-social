@@ -50,7 +50,17 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
       let query = supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          slug,
+          excerpt,
+          image_url,
+          published_at,
+          reading_time,
+          views_count,
+          likes_count,
+          author,
+          author_id,
           categories:category_id (
             id,
             name,
@@ -58,7 +68,7 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
             color,
             description
           )
-        `)
+        `, { count: 'exact' })
         .eq("published", true)
         .order("published_at", { ascending: false });
 
@@ -102,6 +112,8 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
         currentPage: page
       };
     },
+    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 };
 
@@ -154,6 +166,8 @@ export const useArticle = (slug: string) => {
 
       return article;
     },
+    staleTime: 1000 * 60 * 5, // Cache article for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
   });
 };
 
@@ -207,6 +221,8 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
 
       return enriched as Article[];
     },
+    staleTime: 1000 * 60 * 3, // Cache for 3 minutes
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 };
 
@@ -222,6 +238,8 @@ export const useCategories = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 1000 * 60 * 10, // Cache categories for 10 minutes (rarely change)
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
   });
 };
 
@@ -233,7 +251,17 @@ export const useInfiniteArticles = (categorySlug?: string) => {
       let query = supabase
         .from("articles")
         .select(`
-          *,
+          id,
+          title,
+          slug,
+          excerpt,
+          image_url,
+          published_at,
+          reading_time,
+          views_count,
+          likes_count,
+          author,
+          author_id,
           categories:category_id (
             id,
             name,
@@ -282,5 +310,7 @@ export const useInfiniteArticles = (categorySlug?: string) => {
 
       return enriched as Article[];
     },
+    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 };
