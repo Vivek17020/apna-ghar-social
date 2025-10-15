@@ -32,6 +32,7 @@ import AdminNewArticle from "./pages/AdminNewArticle";
 import AdminEditArticle from "./pages/AdminEditArticle";
 import AdminEngagement from "./pages/AdminEngagement";
 import AdminSettings from "./pages/AdminSettings";
+import AdminExams from "./pages/AdminExams";
 import NewsletterPreferencesPage from "./pages/NewsletterPreferences";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -46,6 +47,9 @@ const AdminExamPapers = lazy(() => import("@/pages/AdminExamPapers"));
 const PreviousYearPapers = lazy(() => import("@/pages/PreviousYearPapers"));
 const ExamPaperDetail = lazy(() => import("@/pages/ExamPaperDetail"));
 const ComingSoon = lazy(() => import("@/pages/ComingSoon"));
+const AdmitCards = lazy(() => import("@/pages/AdmitCards"));
+const AdminAdmitCards = lazy(() => import("@/pages/AdminAdmitCards"));
+const AdminNewAdmitCard = lazy(() => import("@/pages/AdminNewAdmitCard"));
 
 const App = () => {
   return (
@@ -81,11 +85,11 @@ const App = () => {
                     <Route path="/disclaimer" element={<Disclaimer />} />
                     <Route path="/audit" element={<WebsiteAudit />} />
                     <Route path="/auth" element={<Auth />} />
-                    <Route path="/government-exams" element={<GovernmentExams />} />
+          <Route path="/government-exams" element={<GovernmentExams />} />
           <Route path="/government-exams/:slug" element={<GovernmentExamPapers />} />
           <Route path="/jobs/previous-year-papers" element={<PreviousYearPapers />} />
           <Route path="/jobs/previous-year-papers/:slug" element={<ExamPaperDetail />} />
-          <Route path="/jobs/admit-cards" element={<ComingSoon title="Admit Cards" />} />
+          <Route path="/admit-cards" element={<AdmitCards />} />
           <Route path="/jobs/results" element={<ComingSoon title="Results" />} />
           <Route path="/jobs/syllabus" element={<ComingSoon title="Syllabus" />} />
           <Route path="/admin/pyq" element={<AdminExamPapers />} />
@@ -100,8 +104,11 @@ const App = () => {
                       <Route path="engagement" element={<AdminEngagement />} />
                       <Route path="audit-report" element={<AuditReport />} />
                       <Route path="settings" element={<AdminSettings />} />
+                      <Route path="exams" element={<AdminExams />} />
                       <Route path="exam-papers" element={<AdminExamPapers />} />
                       <Route path="upload-pyqs" element={<AdminExamPapers />} />
+                      <Route path="admit-cards" element={<AdminAdmitCards />} />
+                      <Route path="admit-cards/new" element={<AdminNewAdmitCard />} />
                     </Route>
                     
                     {/* Catch-all route */}

@@ -32,7 +32,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
       >
         All
       </Button>
-      {categories?.map((category) => (
+      {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
         <Button
           key={category.id}
           variant={activeCategory === category.slug ? "default" : "outline"}

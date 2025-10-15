@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      admit_card_content_sections: {
+        Row: {
+          content: string
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          section_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          section_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          section_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admit_cards: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string
+          download_link: string | null
+          exam_name: string
+          featured: boolean | null
+          id: string
+          published: boolean | null
+          published_date: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          download_link?: string | null
+          exam_name: string
+          featured?: boolean | null
+          id?: string
+          published?: boolean | null
+          published_date?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          download_link?: string | null
+          exam_name?: string
+          featured?: boolean | null
+          id?: string
+          published?: boolean | null
+          published_date?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       affiliate_products: {
         Row: {
           affiliate_url: string
@@ -419,50 +497,84 @@ export type Database = {
           },
         ]
       }
+      exam_list: {
+        Row: {
+          category: string
+          created_at: string
+          exam_name: string
+          id: string
+          logo_url: string | null
+          short_description: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          exam_name: string
+          id?: string
+          logo_url?: string | null
+          short_description?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          exam_name?: string
+          id?: string
+          logo_url?: string | null
+          short_description?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       exam_papers: {
         Row: {
-          category: string | null
           created_at: string
           download_count: number | null
-          exam_name: string
+          exam_id: string | null
           file_size: number | null
           file_url: string
           id: string
-          subject: string | null
-          title: string
+          tier: string | null
           updated_at: string
           uploaded_by: string | null
           year: number
         }
         Insert: {
-          category?: string | null
           created_at?: string
           download_count?: number | null
-          exam_name: string
+          exam_id?: string | null
           file_size?: number | null
           file_url: string
           id?: string
-          subject?: string | null
-          title: string
+          tier?: string | null
           updated_at?: string
           uploaded_by?: string | null
           year: number
         }
         Update: {
-          category?: string | null
           created_at?: string
           download_count?: number | null
-          exam_name?: string
+          exam_id?: string | null
           file_size?: number | null
           file_url?: string
           id?: string
-          subject?: string | null
-          title?: string
+          tier?: string | null
           updated_at?: string
           uploaded_by?: string | null
           year?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "exam_papers_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exam_list"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exam_papers_uploaded_by_fkey"
             columns: ["uploaded_by"]

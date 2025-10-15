@@ -20,10 +20,10 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const jobsLinks = [
-    { label: "Admit Cards", href: "/jobs/admit-cards" },
-    { label: "Results", href: "/jobs/results" },
-    { label: "Syllabus", href: "/jobs/syllabus" },
-    { label: "Previous Year Papers", href: "/jobs/previous-year-papers" },
+    { label: "Admit Cards", href: "/category/jobs-admit-cards" },
+    { label: "Results", href: "/category/jobs-results" },
+    { label: "Syllabus", href: "/category/jobs-syllabus" },
+    { label: "Previous Year Papers", href: "/category/jobs-previous-year-papers" },
   ];
 
   return (
@@ -47,7 +47,7 @@ export function Navbar() {
             >
               Home
             </Link>
-            {categories?.map((category) => (
+            {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
               <Link
                 key={category.id}
                 to={`/category/${category.slug}`}
@@ -61,7 +61,7 @@ export function Navbar() {
                 Jobs
                 <ChevronDown className="h-3 w-3" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background border-border">
+              <DropdownMenuContent align="start" className="z-50 w-56 bg-background border border-border shadow-md">
                 {jobsLinks.map((link) => (
                   <DropdownMenuItem key={link.href} asChild>
                     <Link
@@ -129,7 +129,7 @@ export function Navbar() {
             >
               Home
             </Link>
-            {categories?.map((category) => (
+            {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
               <Link
                 key={category.id}
                 to={`/category/${category.slug}`}

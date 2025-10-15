@@ -14,44 +14,26 @@ import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema";
 export default function GovernmentExams() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: papers, isLoading } = useQuery({
-    queryKey: ["all-exam-papers"],
+  const { data: exams, isLoading } = useQuery({
+    queryKey: ["exam-list"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("exam_papers")
+        .from("exam_list")
         .select("*")
-        .order("exam_name", { ascending: true })
-        .order("year", { ascending: false });
+        .order("exam_name");
       
       if (error) throw error;
       return data;
     },
   });
 
-  const examGroups = useMemo(() => {
-    if (!papers) return [];
-    
-    const groups = papers.reduce((acc, paper) => {
-      const examName = paper.exam_name;
-      if (!acc[examName]) {
-        acc[examName] = {
-          name: examName,
-          slug: examName.toLowerCase().replace(/\s+/g, '-'),
-          paperCount: 0,
-          years: new Set<number>(),
-        };
-      }
-      acc[examName].paperCount++;
-      acc[examName].years.add(paper.year);
-      return acc;
-    }, {} as Record<string, any>);
-
-    return Object.values(groups).sort((a: any, b: any) => a.name.localeCompare(b.name));
-  }, [papers]);
-
-  const filteredExams = examGroups.filter((exam: any) =>
-    exam.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredExams = useMemo(() => {
+    if (!exams) return [];
+    return exams.filter((exam) =>
+      exam.exam_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exam.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [exams, searchQuery]);
 
   const breadcrumbs = [
     { name: "Home", url: window.location.origin },
@@ -112,15 +94,24 @@ export default function GovernmentExams() {
               </div>
             ) : filteredExams && filteredExams.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredExams.map((exam: any) => (
-                  <Card key={exam.slug} className="hover:shadow-lg transition-shadow">
+                {filteredExams.map((exam) => (
+                  <Card key={exam.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <CardTitle className="flex items-start gap-2">
-                        <FileText className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary" />
-                        <span>{exam.name}</span>
+                        {exam.logo_url ? (
+                          <img src={exam.logo_url} alt={exam.exam_name} className="h-8 w-8 object-contain" />
+                        ) : (
+                          <FileText className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary" />
+                        )}
+                        <span>{exam.exam_name}</span>
                       </CardTitle>
                       <CardDescription>
-                        {exam.paperCount} papers available • Years: {Array.from(exam.years).sort((a: any, b: any) => a - b).join(', ')}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                          {exam.category}
+                        </span>
+                        {exam.short_description && (
+                          <p className="mt-2 text-sm">{exam.short_description}</p>
+                        )}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>

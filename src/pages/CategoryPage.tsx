@@ -4,14 +4,23 @@ import { ArticleGrid } from "@/components/public/article-grid";
 import { useCategories, useArticles } from "@/hooks/use-articles";
 import { SEOHead } from "@/utils/seo";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ShareButtons } from "@/components/public/share-buttons";
+import { CommentsSection } from "@/components/public/comments-section";
+import { LikeButton } from "@/components/public/like-button";
+import { sanitizeHtml } from "@/lib/sanitize";
+import { ArrowLeft, FileText, Calendar, Clock, Eye, User } from "lucide-react";
+import { formatDistanceToNow, format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: categories } = useCategories();
-  const { data: articlesData } = useArticles(slug, 1, 1); // Get first article to check if any exist
+  const { data: articlesData, isLoading: articlesLoading } = useArticles(slug, 1, 1);
   
   const category = categories?.find(cat => cat.slug === slug);
+  const isJobsCategory = category?.name.startsWith('Jobs/');
+  const article = articlesData?.articles?.[0];
 
   if (!category) {
     return (
@@ -69,7 +78,7 @@ export default function CategoryPage() {
             <div className="flex items-center justify-center gap-2 mb-4">
               <FileText className="h-8 w-8 text-primary" />
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                {category.name} News
+                {category.name.replace('Jobs/', '')} {!category.name.startsWith('Jobs/') && 'News'}
               </h1>
             </div>
             {category.description && (
@@ -87,8 +96,126 @@ export default function CategoryPage() {
             )}
           </div>
 
-          {/* Articles Grid */}
-          <ArticleGrid categorySlug={slug} />
+          {/* Content based on category type */}
+          {isJobsCategory ? (
+            // For Jobs categories, display full article content directly
+            articlesLoading ? (
+              <div className="max-w-4xl mx-auto">
+                <Skeleton className="h-12 w-full mb-4" />
+                <Skeleton className="h-6 w-3/4 mb-8" />
+                <Skeleton className="aspect-[16/9] w-full mb-8" />
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </div>
+            ) : article ? (
+              <div className="max-w-4xl mx-auto">
+                {/* Article Header */}
+                <header className="mb-8">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                    {article.title}
+                  </h2>
+                  
+                  {article.excerpt && (
+                    <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                      {article.excerpt}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      {article.public_profiles?.username && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-4 w-4" />
+                          <span>By {article.public_profiles.username}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{formatDistanceToNow(new Date(article.published_at || article.created_at), { addSuffix: true })}</span>
+                      </div>
+                      {article.reading_time && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{article.reading_time} min read</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-4 w-4" />
+                        <span>{article.views_count} views</span>
+                      </div>
+                    </div>
+                    
+                    <ShareButtons 
+                      url={`${window.location.origin}/article/${article.slug}`}
+                      title={article.title}
+                      description={article.excerpt || ""}
+                      articleId={article.id}
+                    />
+                  </div>
+                </header>
+
+                {/* Featured Image */}
+                {article.image_url && (
+                  <div className="mb-8 overflow-hidden rounded-lg">
+                    <img
+                      src={article.image_url}
+                      alt={article.title}
+                      className="w-full aspect-[16/9] object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
+                {/* Article Content */}
+                <article className="prose prose-lg max-w-none dark:prose-invert mb-12 article-content">
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }} />
+                </article>
+
+                {/* Tags */}
+                {article.tags && article.tags.length > 0 && (
+                  <div className="mb-12">
+                    <h3 className="text-lg font-semibold mb-4">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {article.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Engagement Section */}
+                <div className="border-t border-border pt-8 mb-12">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <LikeButton articleId={article.id} />
+                      <h3 className="text-lg font-semibold">Share this article</h3>
+                    </div>
+                    <ShareButtons 
+                      url={`${window.location.origin}/article/${article.slug}`}
+                      title={article.title}
+                      description={article.excerpt || ""}
+                      articleId={article.id}
+                    />
+                  </div>
+                </div>
+
+                {/* Comments Section */}
+                <CommentsSection articleId={article.id} />
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No article available in this category yet.</p>
+              </div>
+            )
+          ) : (
+            // For regular categories, display article grid
+            <ArticleGrid categorySlug={slug} />
+          )}
         </main>
       </div>
     </>

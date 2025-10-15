@@ -16,23 +16,39 @@ export default function AdminExamPapers() {
   const [editingPaper, setEditingPaper] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    exam_name: "",
+    exam_id: "",
     year: new Date().getFullYear(),
-    subject: "",
-    category: "",
+    tier: "",
     file_url: "",
-    file_size: 0,
   });
 
   const queryClient = useQueryClient();
+
+  const { data: exams } = useQuery({
+    queryKey: ["exam-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("exam_list")
+        .select("*")
+        .order("exam_name");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: papers, isLoading } = useQuery({
     queryKey: ["exam-papers"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("exam_papers")
-        .select("*")
+        .select(`
+          *,
+          exam_list (
+            exam_name,
+            category
+          )
+        `)
         .order("year", { ascending: false })
         .order("created_at", { ascending: false });
       
@@ -90,13 +106,10 @@ export default function AdminExamPapers() {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      exam_name: "",
+      exam_id: "",
       year: new Date().getFullYear(),
-      subject: "",
-      category: "",
+      tier: "",
       file_url: "",
-      file_size: 0,
     });
     setEditingPaper(null);
     setIsDialogOpen(false);
@@ -115,13 +128,10 @@ export default function AdminExamPapers() {
   const handleEdit = (paper: any) => {
     setEditingPaper(paper);
     setFormData({
-      title: paper.title,
-      exam_name: paper.exam_name,
+      exam_id: paper.exam_id,
       year: paper.year,
-      subject: paper.subject || "",
-      category: paper.category || "",
+      tier: paper.tier || "",
       file_url: paper.file_url,
-      file_size: paper.file_size || 0,
     });
     setIsDialogOpen(true);
   };
@@ -151,7 +161,6 @@ export default function AdminExamPapers() {
       setFormData({
         ...formData,
         file_url: publicUrl,
-        file_size: file.size,
       });
 
       toast.success("File uploaded successfully");
@@ -186,25 +195,21 @@ export default function AdminExamPapers() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="title">Paper Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g., SSC CGL Tier 1 - Shift 1"
+                <Label htmlFor="exam_id">Select Exam *</Label>
+                <select
+                  id="exam_id"
+                  value={formData.exam_id}
+                  onChange={(e) => setFormData({ ...formData, exam_id: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="exam_name">Exam Name *</Label>
-                <Input
-                  id="exam_name"
-                  value={formData.exam_name}
-                  onChange={(e) => setFormData({ ...formData, exam_name: e.target.value })}
-                  placeholder="e.g., SSC CGL"
-                  required
-                />
+                >
+                  <option value="">Choose an exam</option>
+                  {exams?.map((exam) => (
+                    <option key={exam.id} value={exam.id}>
+                      {exam.exam_name} ({exam.category})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -222,24 +227,14 @@ export default function AdminExamPapers() {
                 </div>
 
                 <div>
-                  <Label htmlFor="subject">Subject</Label>
+                  <Label htmlFor="tier">Tier/Level</Label>
                   <Input
-                    id="subject"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    placeholder="Optional"
+                    id="tier"
+                    value={formData.tier}
+                    onChange={(e) => setFormData({ ...formData, tier: e.target.value })}
+                    placeholder="e.g., Tier 1, Prelims"
                   />
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  placeholder="e.g., SSC, Railway, Banking, Defence"
-                />
               </div>
 
               <div>
@@ -256,7 +251,7 @@ export default function AdminExamPapers() {
                 </div>
                 {formData.file_url && (
                   <p className="text-sm text-muted-foreground mt-1">
-                    File uploaded: {(formData.file_size / 1024 / 1024).toFixed(2)} MB
+                    File uploaded successfully
                   </p>
                 )}
               </div>
@@ -289,11 +284,10 @@ export default function AdminExamPapers() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
                 <TableHead>Exam</TableHead>
-                <TableHead className="text-center">Year</TableHead>
-                <TableHead>Subject</TableHead>
                 <TableHead>Category</TableHead>
+                <TableHead className="text-center">Year</TableHead>
+                <TableHead>Tier/Level</TableHead>
                 <TableHead className="text-center">Downloads</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -301,11 +295,10 @@ export default function AdminExamPapers() {
             <TableBody>
               {papers.map((paper) => (
                 <TableRow key={paper.id}>
-                  <TableCell className="font-medium">{paper.title}</TableCell>
-                  <TableCell>{paper.exam_name}</TableCell>
+                  <TableCell className="font-medium">{paper.exam_list?.exam_name || "Unknown"}</TableCell>
+                  <TableCell>{paper.exam_list?.category || "—"}</TableCell>
                   <TableCell className="text-center">{paper.year}</TableCell>
-                  <TableCell>{paper.subject || "—"}</TableCell>
-                  <TableCell>{paper.category || "—"}</TableCell>
+                  <TableCell>{paper.tier || "—"}</TableCell>
                   <TableCell className="text-center">{paper.download_count || 0}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
