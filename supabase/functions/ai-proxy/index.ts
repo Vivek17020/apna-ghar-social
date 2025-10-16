@@ -299,7 +299,7 @@ RETURN ONLY A VALID JSON OBJECT with these exact keys (no markdown, no code fenc
 
 {
   "title": "Compelling 5-15 word article title",
-  "excerpt": "Engaging 2-3 sentence excerpt (100-150 words) that captures the main points",
+  "excerpt": "Engaging excerpt under 300 characters that captures the main points",
   "meta_title": "SEO-optimized title (max 60 characters)",
   "meta_description": "SEO-optimized description (120-160 characters) with target keyword",
   "tags": ["tag1", "tag2", "tag3"],
@@ -308,7 +308,7 @@ RETURN ONLY A VALID JSON OBJECT with these exact keys (no markdown, no code fenc
 
 REQUIREMENTS:
 - Title: Compelling, newsworthy, 5-15 words
-- Excerpt: 100-150 words, captures main points concisely
+- Excerpt: Under 300 characters, captures main points concisely
 - Meta Title: Max 60 chars, includes main keyword
 - Meta Description: 120-160 chars, includes keyword naturally
 - Tags: 8-15 lowercase, specific, searchable terms
