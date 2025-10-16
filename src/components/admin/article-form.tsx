@@ -559,51 +559,49 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
     try {
       const { data, error } = await supabase.functions.invoke('ai-proxy', {
         body: {
-          task: 'format-seo-content',
+          task: 'format-and-extract-all',
           content: formData.content,
+          title: formData.title
         }
       });
 
       if (error) throw error;
 
-      if (data?.result) {
-        const raw: string = data.result as string;
-        const cleaned = raw
-          .replace(/^```(?:html)?\n?/i, '')
-          .replace(/```$/i, '')
-          .trim();
-
-        if (!cleaned) {
-          toast({
-            title: "No Changes Returned",
-            description: "The AI didn't return any formatted content.",
-          });
-          return;
+      if (data) {
+        // Update all fields at once
+        const updates: any = {};
+        
+        if (data.formatted_content) {
+          const cleaned = data.formatted_content
+            .replace(/^```(?:html)?\n?/i, '')
+            .replace(/```$/i, '')
+            .trim();
+          updates.content = cleaned;
+        }
+        
+        if (data.title) updates.title = data.title;
+        if (data.excerpt) updates.excerpt = data.excerpt;
+        if (data.meta_title) updates.meta_title = data.meta_title;
+        if (data.meta_description) updates.meta_description = data.meta_description;
+        if (data.tags && Array.isArray(data.tags)) {
+          updates.tags = data.tags.slice(0, 20);
         }
 
-        const prev = (formData.content || '').trim();
-        if (cleaned === prev) {
-          toast({
-            title: "No Changes Detected",
-            description: "Content appears already formatted.",
-          });
-          return;
-        }
-
-        updateFormData({ content: cleaned });
+        updateFormData(updates);
+        
         toast({
-          title: "Content Formatted",
-          description: "Your content has been optimized with SEO formatting, headings, keywords, and placeholders.",
+          title: "Content Formatted & Extracted",
+          description: "Content formatted with SEO optimization, and all metadata fields extracted successfully.",
         });
       } else {
         toast({
           title: "Formatting Failed",
-          description: "AI response was empty. Please try again.",
+          description: "The AI didn't return any data.",
           variant: "destructive",
         });
       }
     } catch (error: any) {
-      console.error('Content formatting error:', error);
+      console.error('Format content error:', error);
       toast({
         title: "Formatting Failed",
         description: error?.message || "Failed to format content. Please try again.",

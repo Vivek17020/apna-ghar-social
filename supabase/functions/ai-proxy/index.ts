@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 interface AIRequest {
-  task: 'summary' | 'title' | 'keywords' | 'translation' | 'format-seo-content' | 'humanize-content' | 'seo-optimize' | 'bold-keywords' | 'extract-tags'
+  task: 'summary' | 'title' | 'keywords' | 'translation' | 'format-seo-content' | 'humanize-content' | 'seo-optimize' | 'bold-keywords' | 'extract-tags' | 'format-and-extract-all'
   content: string
   title?: string
   targetLanguage?: string
@@ -288,6 +288,65 @@ Tags (comma-separated):`
         } catch (error) {
           console.error('Extract tags error:', error)
           throw new Error('Failed to extract tags')
+        }
+        break
+
+      case 'format-and-extract-all':
+        try {
+          const allInOnePrompt = `You are an expert SEO content editor. Analyze and process the following article content to extract ALL the following information in a single response.
+
+RETURN ONLY A VALID JSON OBJECT with these exact keys (no markdown, no code fences):
+
+{
+  "title": "Compelling 5-15 word article title",
+  "excerpt": "Engaging 2-3 sentence excerpt (100-150 words) that captures the main points",
+  "meta_title": "SEO-optimized title (max 60 characters)",
+  "meta_description": "SEO-optimized description (120-160 characters) with target keyword",
+  "tags": ["tag1", "tag2", "tag3"],
+  "formatted_content": "Full SEO-formatted HTML content with proper structure"
+}
+
+REQUIREMENTS:
+- Title: Compelling, newsworthy, 5-15 words
+- Excerpt: 100-150 words, captures main points concisely
+- Meta Title: Max 60 chars, includes main keyword
+- Meta Description: 120-160 chars, includes keyword naturally
+- Tags: 8-15 lowercase, specific, searchable terms
+- Formatted Content: 
+  * Proper HTML headings (<h2>, <h3>)
+  * Main keywords wrapped in <strong> tags
+  * Proper paragraph tags (<p>)
+  * Bullet lists with <ul> and <li> where appropriate
+  * Internal link placeholders: <a href="[internal-link-placeholder]">keyword</a>
+  * Image placeholders: <!-- image: topic_keyword -->
+  * Human-readable, grammatically correct, SEO-optimized
+
+CONTENT TO PROCESS:
+${content.slice(0, 5000)}
+
+JSON OUTPUT (no code fences):`
+
+          const response = await callLovableAI(allInOnePrompt)
+          
+          // Clean any potential code fences
+          let cleaned = response.trim()
+          cleaned = cleaned.replace(/^```json\n?/i, '')
+          cleaned = cleaned.replace(/^```\n?/i, '')
+          cleaned = cleaned.replace(/\n?```$/i, '')
+          
+          const parsed = JSON.parse(cleaned)
+          
+          result = {
+            title: parsed.title || '',
+            excerpt: parsed.excerpt || '',
+            meta_title: parsed.meta_title || '',
+            meta_description: parsed.meta_description || '',
+            tags: parsed.tags || [],
+            formatted_content: parsed.formatted_content || content
+          }
+        } catch (error) {
+          console.error('Format and extract all error:', error)
+          throw new Error('Failed to format and extract all fields')
         }
         break
 
