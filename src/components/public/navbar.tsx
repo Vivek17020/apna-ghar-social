@@ -47,15 +47,44 @@ export function Navbar() {
             >
               Home
             </Link>
-            {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
-              <Link
-                key={category.id}
-                to={`/category/${category.slug}`}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {category.name}
-              </Link>
-            ))}
+            {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => {
+              const hasSubcategories = category.subcategories && category.subcategories.length > 0;
+              
+              if (hasSubcategories) {
+                return (
+                  <DropdownMenu key={category.id}>
+                    <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 focus:outline-none">
+                      {category.name}
+                      <ChevronDown className="h-3 w-3" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="z-50 w-56 bg-background border border-border shadow-md">
+                      <DropdownMenuItem asChild>
+                        <Link to={`/category/${category.slug}`} className="w-full cursor-pointer">
+                          All {category.name}
+                        </Link>
+                      </DropdownMenuItem>
+                      {category.subcategories?.map((subcat) => (
+                        <DropdownMenuItem key={subcat.id} asChild>
+                          <Link to={`/category/${subcat.slug}`} className="w-full cursor-pointer">
+                            {subcat.name}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+              
+              return (
+                <Link
+                  key={category.id}
+                  to={`/category/${category.slug}`}
+                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                >
+                  {category.name}
+                </Link>
+              );
+            })}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 focus:outline-none">
                 Jobs
@@ -130,14 +159,29 @@ export function Navbar() {
               Home
             </Link>
             {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
-              <Link
-                key={category.id}
-                to={`/category/${category.slug}`}
-                className="block px-3 py-2 text-base font-medium text-foreground/60 hover:text-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {category.name}
-              </Link>
+              <div key={category.id}>
+                <Link
+                  to={`/category/${category.slug}`}
+                  className="block px-3 py-2 text-base font-medium text-foreground/60 hover:text-foreground"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {category.name}
+                </Link>
+                {category.subcategories && category.subcategories.length > 0 && (
+                  <div className="pl-4">
+                    {category.subcategories.map((subcat) => (
+                      <Link
+                        key={subcat.id}
+                        to={`/category/${subcat.slug}`}
+                        className="block px-3 py-2 text-sm text-foreground/60 hover:text-foreground"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {subcat.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             <div className="border-t border-border mt-2 pt-2">
               <p className="px-3 py-2 text-sm font-semibold text-foreground">Jobs</p>

@@ -226,6 +226,16 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
   });
 };
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  color: string | null;
+  parent_id: string | null;
+  subcategories?: Category[];
+}
+
 export const useCategories = () => {
   return useQuery({
     queryKey: ["categories"],
@@ -236,7 +246,19 @@ export const useCategories = () => {
         .order("name");
 
       if (error) throw error;
-      return data;
+      
+      // Organize into parent/child structure
+      const categories = data as Category[];
+      const parentCategories = categories.filter(cat => !cat.parent_id);
+      const childCategories = categories.filter(cat => cat.parent_id);
+      
+      // Attach subcategories to parents
+      const organized = parentCategories.map(parent => ({
+        ...parent,
+        subcategories: childCategories.filter(child => child.parent_id === parent.id)
+      }));
+      
+      return organized;
     },
     staleTime: 1000 * 60 * 10, // Cache categories for 10 minutes (rarely change)
     gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes

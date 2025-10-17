@@ -49,19 +49,54 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
       >
         All
       </Button>
-      {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => (
-        <Button
-          key={category.id}
-          variant={activeCategory === category.slug ? "default" : "outline"}
-          onClick={() => onCategoryChange(category.slug)}
-          className={cn(
-            "transition-all duration-200",
-            activeCategory === category.slug && "bg-gradient-primary text-primary-foreground"
-          )}
-        >
-          {category.name}
-        </Button>
-      ))}
+      {categories?.filter(category => !category.name.startsWith('Jobs/')).map((category) => {
+        const hasSubcategories = category.subcategories && category.subcategories.length > 0;
+        const isActive = activeCategory === category.slug || 
+          (hasSubcategories && category.subcategories?.some(sub => sub.slug === activeCategory));
+        
+        if (hasSubcategories) {
+          return (
+            <DropdownMenu key={category.id}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={isActive ? "default" : "outline"}
+                  className={cn(
+                    "transition-all duration-200",
+                    isActive && "bg-gradient-primary text-primary-foreground"
+                  )}
+                >
+                  {category.name}
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="z-50 w-56 bg-background border border-border shadow-md">
+                <DropdownMenuItem onClick={() => onCategoryChange(category.slug)}>
+                  All {category.name}
+                </DropdownMenuItem>
+                {category.subcategories?.map((subcat) => (
+                  <DropdownMenuItem key={subcat.id} onClick={() => onCategoryChange(subcat.slug)}>
+                    {subcat.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        }
+        
+        return (
+          <Button
+            key={category.id}
+            variant={isActive ? "default" : "outline"}
+            onClick={() => onCategoryChange(category.slug)}
+            className={cn(
+              "transition-all duration-200",
+              isActive && "bg-gradient-primary text-primary-foreground"
+            )}
+          >
+            {category.name}
+          </Button>
+        );
+      })}
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
