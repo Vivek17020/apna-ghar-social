@@ -71,6 +71,7 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
   const [loading, setLoading] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [subcategories, setSubcategories] = useState<any[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [newTag, setNewTag] = useState('');
@@ -166,10 +167,32 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
     const { data } = await supabase
       .from('categories')
       .select('*')
+      .is('parent_id', null)
       .order('name');
     
     if (data) setCategories(data);
   };
+
+  const fetchSubcategories = async (parentId: string) => {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('parent_id', parentId)
+      .order('name');
+    
+    if (data) setSubcategories(data);
+    else setSubcategories([]);
+  };
+
+  useEffect(() => {
+    if (formData.category_id) {
+      // Check if selected category is a parent
+      const selectedCategory = categories.find(c => c.id === formData.category_id);
+      if (selectedCategory) {
+        fetchSubcategories(selectedCategory.id);
+      }
+    }
+  }, [formData.category_id, categories]);
 
   const getDraftKey = () => {
     return article?.id ? `article-draft-${article.id}` : 'article-draft-new';
@@ -1298,22 +1321,52 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
             <CardHeader>
               <CardTitle>Category</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Select
-                value={formData.category_id}
-                onValueChange={(value) => updateFormData({ category_id: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="parent-category">Parent Category</Label>
+                <Select
+                  value={formData.category_id}
+                  onValueChange={(value) => {
+                    updateFormData({ category_id: value });
+                    fetchSubcategories(value);
+                  }}
+                >
+                  <SelectTrigger id="parent-category">
+                    <SelectValue placeholder="Select parent category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {subcategories.length > 0 && (
+                <div>
+                  <Label htmlFor="subcategory">Subcategory (Optional)</Label>
+                  <Select
+                    value={subcategories.find(sub => sub.id === formData.category_id) ? formData.category_id : ''}
+                    onValueChange={(value) => updateFormData({ category_id: value })}
+                  >
+                    <SelectTrigger id="subcategory">
+                      <SelectValue placeholder="Select subcategory or keep parent" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subcategories.map((subcategory) => (
+                        <SelectItem key={subcategory.id} value={subcategory.id}>
+                          {subcategory.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Leave blank to assign to parent category only
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

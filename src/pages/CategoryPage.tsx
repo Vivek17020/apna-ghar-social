@@ -27,6 +27,8 @@ export default function CategoryPage() {
   const { slug, parentSlug, childSlug } = useParams<{ slug?: string; parentSlug?: string; childSlug?: string }>();
   
   // Determine the actual category slug to use
+  // If we have childSlug, it's a subcategory page (/category/parent/child)
+  // Otherwise, slug is the category (/category/slug)
   const categorySlug = childSlug || slug;
   const { data: categories } = useCategories();
   const { data: articlesData, isLoading: articlesLoading } = useArticles(categorySlug, 1, 1);

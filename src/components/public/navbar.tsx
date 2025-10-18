@@ -65,7 +65,7 @@ export function Navbar() {
                       </DropdownMenuItem>
                       {category.subcategories?.map((subcat) => (
                         <DropdownMenuItem key={subcat.id} asChild>
-                          <Link to={`/${category.slug}/${subcat.slug}`} className="w-full cursor-pointer">
+                          <Link to={`/category/${category.slug}/${subcat.slug}`} className="w-full cursor-pointer">
                             {subcat.name}
                           </Link>
                         </DropdownMenuItem>
@@ -172,7 +172,7 @@ export function Navbar() {
                     {category.subcategories.map((subcat) => (
                       <Link
                         key={subcat.id}
-                        to={`/${category.slug}/${subcat.slug}`}
+                        to={`/category/${category.slug}/${subcat.slug}`}
                         className="block px-3 py-2 text-sm text-foreground/60 hover:text-foreground"
                         onClick={() => setMobileMenuOpen(false)}
                       >

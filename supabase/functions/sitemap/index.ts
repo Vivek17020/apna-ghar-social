@@ -112,13 +112,13 @@ function generateSitemap(articles: Article[], categories: Category[]) {
 
   // Category pages
   categories.forEach(category => {
-    // For subcategories, use nested URL structure
+    // For subcategories, use /category/parent-slug/subcategory-slug structure
     if (category.parent_id) {
       const parent = categories.find(c => c.id === category.parent_id);
       if (parent) {
         urls += `
   <url>
-    <loc>${baseUrl}/${parent.slug}/${category.slug}</loc>
+    <loc>${baseUrl}/category/${parent.slug}/${category.slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
