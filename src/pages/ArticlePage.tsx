@@ -27,8 +27,17 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export default function ArticlePage() {
-  const { slug } = useParams<{ slug: string }>();
-  const { data: article, isLoading, error } = useArticle(slug!);
+  const { slug, articleSlug, categorySlug, subcategorySlug } = useParams<{ 
+    slug?: string;
+    articleSlug?: string;
+    categorySlug?: string;
+    subcategorySlug?: string;
+  }>();
+  
+  // Determine which slug to use (supports both old and new URL formats)
+  const actualSlug = articleSlug || slug;
+  
+  const { data: article, isLoading, error } = useArticle(actualSlug!);
   const trackReading = useTrackReading();
 
   // Track reading when article loads
@@ -118,8 +127,21 @@ export default function ArticlePage() {
   }
 
   const publishedDate = article.published_at ? new Date(article.published_at) : new Date(article.created_at);
-  // Canonical URL always uses www and no query params
-  const canonicalUrl = `https://www.thebulletinbriefs.in/article/${article.slug}`;
+  
+  // Build canonical URL with category path
+  let canonicalUrl = `https://www.thebulletinbriefs.in/article/${article.slug}`; // fallback
+  if (article.categories) {
+    // If it's a subcategory article, we need to fetch parent category info
+    if (article.categories.parent_id) {
+      // Use params if available, otherwise fallback to old URL format
+      if (categorySlug && subcategorySlug) {
+        canonicalUrl = `https://www.thebulletinbriefs.in/${categorySlug}/${subcategorySlug}/${article.slug}`;
+      }
+    } else {
+      // If it's a main category article, use category/article-slug format
+      canonicalUrl = `https://www.thebulletinbriefs.in/${article.categories.slug}/${article.slug}`;
+    }
+  }
   
   // Auto-generate SEO keywords from article content
   const seoKeywords = generateSEOKeywords(article.title, article.content, article.tags);

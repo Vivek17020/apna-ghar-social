@@ -67,7 +67,9 @@ const App = () => {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<NewsHomepage />} />
-                    <Route path="/article/:slug" element={<ArticlePage />} />
+          <Route path="/article/:slug" element={<ArticlePage />} />
+          <Route path="/:categorySlug/:subcategorySlug/:articleSlug" element={<ArticlePage />} />
+          <Route path="/:categorySlug/:articleSlug" element={<ArticlePage />} />
                     <Route path="/category/:slug" element={<CategoryPage />} />
                     <Route path="/category/:parentSlug/:childSlug" element={<CategoryPage />} />
                     <Route path="/rss" element={<RSSFeed />} />

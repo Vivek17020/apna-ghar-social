@@ -20,7 +20,8 @@ export const usePersonalizedFeed = (limit = 12) => {
             name,
             slug,
             color,
-            description
+            description,
+            parent_id
           )
         `)
         .eq("published", true);
@@ -45,7 +46,8 @@ export const usePersonalizedFeed = (limit = 12) => {
               name,
               slug,
               color,
-              description
+              description,
+              parent_id
             )
           `)
           .eq("published", true)
@@ -148,7 +150,8 @@ export const useEnhancedRelatedArticles = (
             id,
             name,
             slug,
-            color
+            color,
+            parent_id
           )
         `)
         .eq("published", true)
@@ -170,7 +173,8 @@ export const useEnhancedRelatedArticles = (
               id,
               name,
               slug,
-              color
+              color,
+              parent_id
             )
           `)
           .eq("published", true)

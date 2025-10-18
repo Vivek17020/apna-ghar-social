@@ -32,6 +32,7 @@ export interface Article {
     slug: string;
     color: string;
     description: string | null;
+    parent_id: string | null;
   };
   public_profiles?: {
     username: string;
@@ -66,7 +67,8 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
             name,
             slug,
             color,
-            description
+            description,
+            parent_id
           )
         `, { count: 'exact' })
         .eq("published", true)
@@ -130,7 +132,8 @@ export const useArticle = (slug: string) => {
             name,
             slug,
             color,
-            description
+            description,
+            parent_id
           )
         `)
         .eq("slug", slug)
@@ -191,7 +194,8 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
             id,
             name,
             slug,
-            color
+            color,
+            parent_id
           )
         `)
         .eq("published", true)
@@ -289,7 +293,8 @@ export const useInfiniteArticles = (categorySlug?: string) => {
             name,
             slug,
             color,
-            description
+            description,
+            parent_id
           )
         `)
         .eq("published", true)

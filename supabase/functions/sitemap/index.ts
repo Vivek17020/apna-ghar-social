@@ -10,6 +10,7 @@ interface Article {
   id: string;
   title: string;
   slug: string;
+  category_id: string;
   published: boolean;
   updated_at: string;
   published_at: string;
@@ -37,7 +38,7 @@ serve(async (req) => {
     // Fetch articles
     const { data: articles, error: articlesError } = await supabaseClient
       .from("articles")
-      .select("id, title, slug, published, updated_at, published_at")
+      .select("id, title, slug, category_id, published, updated_at, published_at")
       .eq("published", true)
       .order("published_at", { ascending: false });
 
@@ -136,7 +137,7 @@ function generateSitemap(articles: Article[], categories: Category[]) {
     }
   });
 
-  // Article pages
+  // Article pages with category paths
   articles
     .filter(article => article.published)
     .forEach(article => {
@@ -144,9 +145,26 @@ function generateSitemap(articles: Article[], categories: Category[]) {
         ? new Date(article.updated_at).toISOString().split("T")[0] 
         : today;
       
+      // Find the article's category to build the correct URL
+      const articleCategory = categories.find(c => c.id === article.category_id);
+      let articlePath = `/article/${article.slug}`; // fallback to old format
+      
+      if (articleCategory) {
+        // If it's a subcategory, use parent/subcategory/article-slug format
+        if (articleCategory.parent_id) {
+          const parentCategory = categories.find(c => c.id === articleCategory.parent_id);
+          if (parentCategory) {
+            articlePath = `/${parentCategory.slug}/${articleCategory.slug}/${article.slug}`;
+          }
+        } else {
+          // If it's a main category, use category/article-slug format
+          articlePath = `/${articleCategory.slug}/${article.slug}`;
+        }
+      }
+      
       urls += `
   <url>
-    <loc>${baseUrl}/article/${article.slug}</loc>
+    <loc>${baseUrl}${articlePath}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
